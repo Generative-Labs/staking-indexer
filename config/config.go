@@ -31,14 +31,14 @@ var (
 
 // Config is the main config for the fpd cli command
 type Config struct {
-	LogLevel       string         `long:"loglevel" description:"Logging level for all subsystems" choice:"trace" choice:"debug" choice:"info" choice:"warn" choice:"error" choice:"fatal"`
-	BitcoinNetwork string         `long:"bitcoinnetwork" description:"Bitcoin network to run on" choice:"mainnet" choice:"regtest" choice:"testnet" choice:"simnet" choice:"signet"`
-	BTCConfig      *BTCConfig     `group:"btcconfig" namespace:"btcconfig"`
-	DatabaseConfig *DBConfig      `group:"dbconfig" namespace:"dbconfig"`
-	QueueConfig    *QueueConfig   `group:"queueconfig" namespace:"queueconfig"`
-	MetricsConfig  *MetricsConfig `group:"metricsconfig" namespace:"metricsconfig"`
-
-	BTCNetParams chaincfg.Params
+	LogLevel         string         `long:"loglevel" description:"Logging level for all subsystems" choice:"trace" choice:"debug" choice:"info" choice:"warn" choice:"error" choice:"fatal"`
+	BitcoinNetwork   string         `long:"bitcoinnetwork" description:"Bitcoin network to run on" choice:"mainnet" choice:"regtest" choice:"testnet" choice:"simnet" choice:"signet"`
+	FinalityProvider []string       `long:"fianlityprovider" description:" Filter for specific finality providers"`
+	BTCConfig        *BTCConfig     `group:"btcconfig" namespace:"btcconfig"`
+	DatabaseConfig   *DBConfig      `group:"dbconfig" namespace:"dbconfig"`
+	QueueConfig      *QueueConfig   `group:"queueconfig" namespace:"queueconfig"`
+	MetricsConfig    *MetricsConfig `group:"metricsconfig" namespace:"metricsconfig"`
+	BTCNetParams     chaincfg.Params
 }
 
 func DefaultConfigWithHome(homePath string) *Config {

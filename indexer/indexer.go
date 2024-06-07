@@ -246,6 +246,11 @@ func (si *StakingIndexer) CalculateTvlInUnconfirmedBlocks(unconfirmedBlocks []*t
 			// 1. try to parse staking tx
 			stakingData, err := si.tryParseStakingTx(msgTx, params)
 			if err == nil {
+				// We only keep tx within finality providers
+				if !si.hasMatchFinalityProvider(stakingData.OpReturnData.FinalityProviderPublicKey) {
+					si.logger.Debug(fmt.Sprintf("skip tx %s in no longer specify finality  providers", msgTx.TxHash().String()))
+					continue
+				}
 				// this is a new staking tx, validate it against staking requirement
 				if err := si.validateStakingTx(params, stakingData); err != nil {
 					if errors.Is(err, ErrInvalidStakingTx) {
@@ -413,6 +418,20 @@ func (si *StakingIndexer) HandleConfirmedBlock(b *types.IndexedBlock) error {
 	lastProcessedBtcHeight.Set(float64(b.Height))
 
 	return nil
+}
+
+func (si *StakingIndexer) hasMatchFinalityProvider(txFinalityProviderPk *btcstaking.XonlyPubKey) bool {
+	if len(si.cfg.FinalityProvider) == 0 {
+		return true
+	}
+	pkBytes := txFinalityProviderPk.Marshall()
+	for _, finalityProvider := range si.cfg.FinalityProvider {
+		if hex.EncodeToString(pkBytes) == finalityProvider {
+			return true
+		}
+	}
+
+	return false
 }
 
 func (si *StakingIndexer) handleSpendingUnbondingTransaction(
