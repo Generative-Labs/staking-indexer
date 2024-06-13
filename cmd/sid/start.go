@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/lightningnetwork/lnd/signal"
 	"github.com/urfave/cli"
 
+	"github.com/babylonchain/staking-indexer/api"
+	"github.com/babylonchain/staking-indexer/api/services"
 	"github.com/babylonchain/staking-indexer/btcclient"
 	"github.com/babylonchain/staking-indexer/btcscanner"
 	"github.com/babylonchain/staking-indexer/config"
@@ -62,6 +65,15 @@ func start(ctx *cli.Context) error {
 	logger, err := log.NewRootLoggerWithFile(config.LogFile(homePath), cfg.LogLevel)
 	if err != nil {
 		return fmt.Errorf("failed to initialize the logger: %w", err)
+	}
+
+	services, err := services.New(context.Background(), cfg)
+	if err != nil {
+		return fmt.Errorf("failed to initialize services: %w", err)
+	}
+
+	if err := api.RunBackground(context.Background(), cfg, services); err != nil {
+		return fmt.Errorf("failed to start api server: %w", err)
 	}
 
 	// create BTC client and connect to BTC server
