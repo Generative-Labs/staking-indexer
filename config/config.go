@@ -34,6 +34,7 @@ type Config struct {
 	LogLevel         string         `long:"loglevel" description:"Logging level for all subsystems" choice:"trace" choice:"debug" choice:"info" choice:"warn" choice:"error" choice:"fatal"`
 	BitcoinNetwork   string         `long:"bitcoinnetwork" description:"Bitcoin network to run on" choice:"mainnet" choice:"regtest" choice:"testnet" choice:"simnet" choice:"signet"`
 	FinalityProvider []string       `long:"fianlityprovider" description:" Filter for specific finality providers"`
+	Server           *ServerConfig  `group:"server" description:"The indexer api server"`
 	BTCConfig        *BTCConfig     `group:"btcconfig" namespace:"btcconfig"`
 	DatabaseConfig   *DBConfig      `group:"dbconfig" namespace:"dbconfig"`
 	QueueConfig      *QueueConfig   `group:"queueconfig" namespace:"queueconfig"`
@@ -44,6 +45,7 @@ type Config struct {
 func DefaultConfigWithHome(homePath string) *Config {
 	cfg := &Config{
 		LogLevel:       defaultLogLevel,
+		Server:         DefaultServerConfig(),
 		BitcoinNetwork: defaultBitcoinNetwork,
 		BTCConfig:      DefaultBTCConfig(),
 		DatabaseConfig: DefaultDBConfigWithHomePath(homePath),
